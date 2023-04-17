@@ -1,0 +1,40 @@
+<mjml>
+  <mj-head>
+    <mj-title>Brief Me Up</mj-title>
+    <mj-attributes>
+      <mj-all font-family="Inter, Helvetica, sans-serif"></mj-all>
+      <mj-text font-weight="300" font-size="16px" color="#616161" line-height="24px"></mj-text>
+    </mj-attributes>
+  </mj-head>
+  <mj-body>
+    <mj-section>
+      <mj-column width="100%">
+        <mj-text>
+          {{md data.weather.body}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section>
+      <mj-column width="100%">
+        <mj-text>
+          <h1>Workout of the day</h1>
+        </mj-text>
+        <mj-text>
+          {{md data.workout.body}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section>
+      <mj-column width="100%">
+        <mj-text>
+          <h1>Fun fact</h1>
+        </mj-text>
+        <mj-text>
+          {{md data.fact.body}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
