@@ -16,12 +16,14 @@
         <mj-text>
           {{md data.news.body}}
         </mj-text>
+        <mj-divider></mj-divider>
         <mj-text font-size="12px">
           <strong>WORKOUT</strong>
         </mj-text>
         <mj-text>
           {{md data.workout.body}}
         </mj-text>
+        <mj-divider></mj-divider>
         <mj-text font-size="12px">
           <strong>WORD OF THE DAY</strong>
         </mj-text>
