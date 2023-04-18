@@ -8,6 +8,10 @@ Brief Me Up is a Node.js application built in TypeScript that sends a daily emai
 - Built in TypeScript for better type safety and code organization.
 - Easy to configure and customize to fit your specific needs.
 
+## Example
+
+See [docs/example.png](docs/example.png) for an example email.
+
 ## Getting Started
 
 ### Prerequisites
