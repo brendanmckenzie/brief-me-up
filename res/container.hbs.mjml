@@ -30,11 +30,7 @@
         <mj-text>
           {{md data.word.body}}
         </mj-text>
-      </mj-column>
-    </mj-section>
-
-    <mj-section>
-      <mj-column width="100%">
+        <mj-divider></mj-divider>
         <mj-text font-size="12px">
           <strong>FUN FACT</strong>
         </mj-text>

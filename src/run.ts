@@ -14,7 +14,7 @@ export const main = async () => {
 
   console.log("generating template...");
   const template = hbs.compile(
-    fs.readFileSync("./src/shared/container.hbs.mjml").toString("utf8")
+    fs.readFileSync("./res/container.hbs.mjml").toString("utf8")
   );
   console.log("processing template...");
   const mjml = template({ data: responses });
