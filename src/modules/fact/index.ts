@@ -11,7 +11,8 @@ export const handler: ModuleHandler = async () => {
       },
       {
         role: "system",
-        content: "You are produce output in the Markdown format.",
+        content:
+          "You are produce output in the Markdown format and start the response immediately with no transition.",
       },
       {
         role: "user",

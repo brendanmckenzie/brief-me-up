@@ -1,53 +1,25 @@
-import { ModuleHandler } from "./modules";
-import { handler as fact } from "./modules/fact";
-import { handler as workout } from "./modules/workout";
-import { handler as weather } from "./modules/weather";
+import { modules } from "./modules";
 import { sendMail } from "./shared/email";
-import Handlebars from "handlebars";
 import mjml2html from "mjml";
 import fs from "fs";
-import showdown from "showdown";
-
-const handlers: { [key: string]: ModuleHandler } = {
-  fact,
-  workout,
-  weather,
-};
-
-const hbs = Handlebars.create();
-
-hbs.registerHelper("md", (input) => {
-  if (!input) {
-    return "";
-  }
-
-  const md = new showdown.Converter();
-
-  return new Handlebars.SafeString(md?.makeHtml(input));
-});
-
-Object.keys(handlers).forEach((key) => {
-  const templateFile = `./src/modules/${key}/template.hbs`;
-  if (fs.existsSync(templateFile)) {
-    hbs.registerPartial(
-      key,
-      Handlebars.compile(fs.readFileSync(templateFile).toString("utf8"))
-    );
-  }
-});
+import { hbs } from "./shared/hbs";
 
 const main = async () => {
+  console.log("executing modules...");
   const entries = await Promise.all(
-    Object.keys(handlers).map(async (key) => [key, await handlers[key]()])
+    Object.keys(modules).map(async (key) => [key, await modules[key]()])
   );
 
   const responses = Object.fromEntries(entries);
 
+  console.log("generating template...");
   const template = hbs.compile(
     fs.readFileSync("./src/shared/container.hbs.mjml").toString("utf8")
   );
+  console.log("processing template...");
   const mjml = template({ data: responses });
 
+  console.log("converting mjml...");
   const { html } = mjml2html(mjml);
 
   const subject = `Daily briefing - ${new Date().toLocaleDateString("en-AU", {
@@ -57,6 +29,7 @@ const main = async () => {
     day: "numeric",
   })}`;
 
+  console.log("sending email...");
   await sendMail(process.env.MAIL_TO!, subject, html);
 };
 
