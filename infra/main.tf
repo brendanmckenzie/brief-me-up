@@ -12,50 +12,28 @@ provider "aws" {
   region = "ap-southeast-2"
 }
 
-
-data "archive_file" "lambda_zip" {
-  type        = "zip"
-  source_dir  = "${path.module}/../dist"
-  output_path = "${path.module}/../dist/function.zip"
-  excludes    = ["function.zip", "layer.zip"]
+data "aws_secretsmanager_secret_version" "settings" {
+  secret_id = "prod/briefmeup"
 }
 
-resource "null_resource" "deps" {
-
-  triggers = {
-    package_json = "${base64sha256(file("../package.json"))}"
-  }
-
-  provisioner "local-exec" {
-    command = "mkdir -p ../layer/nodejs && cp -R ../node_modules ../layer/nodejs"
-  }
-}
-resource "null_resource" "package" {
-
-  provisioner "local-exec" {
-    command = "cd .. ; yarn ; yarn run tsc ; cp -R res dist/"
-  }
+locals {
+  settings = jsondecode(
+    data.aws_secretsmanager_secret_version.settings.secret_string
+  )
 }
 
-data "archive_file" "layer_zip" {
-  type        = "zip"
-  source_dir  = "${path.module}/../layer/"
-  output_path = "${path.module}/../dist/layer.zip"
 
-  depends_on = [null_resource.deps]
+data "local_file" "lambda_zip" {
+  filename = "${path.module}/../build/function.zip"
+}
 
-  excludes = [
-    "nodejs/node_modules/@types",
-    "nodejs/node_modules/typescript",
-    "nodejs/node_modules/ts-node",
-    "nodejs/node_modules/aws-sdk",
-    "nodejs/node_modules/aws-lambda",
-  ]
+data "local_file" "layer_zip" {
+  filename = "${path.module}/../build/layer.zip"
 }
 
 resource "aws_lambda_layer_version" "nodemodules_layer" {
-  filename         = data.archive_file.layer_zip.output_path
-  source_code_hash = data.archive_file.layer_zip.output_base64sha256
+  filename         = data.local_file.layer_zip.filename
+  source_code_hash = data.local_file.layer_zip.content_base64sha256
   layer_name       = "briefmeup_nodemodules_layer"
 
   compatible_runtimes      = ["nodejs18.x"]
@@ -64,15 +42,13 @@ resource "aws_lambda_layer_version" "nodemodules_layer" {
 
 
 resource "aws_lambda_function" "processing_lambda" {
-  filename         = data.archive_file.lambda_zip.output_path
+  filename         = data.local_file.lambda_zip.filename
   function_name    = "briefmeup"
   handler          = "lambda.handler"
-  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
+  source_code_hash = data.local_file.lambda_zip.content_base64sha256
   role             = aws_iam_role.processing_lambda_role.arn
 
   layers = [aws_lambda_layer_version.nodemodules_layer.arn]
-
-  depends_on = [null_resource.package]
 
   architectures = ["arm64"]
   runtime       = "nodejs18.x"
@@ -81,16 +57,16 @@ resource "aws_lambda_function" "processing_lambda" {
 
   environment {
     variables = {
-      OPENAI_API_KEY = ""
+      OPENAI_API_KEY = local.settings.OPENAI_API_KEY
 
-      SMTP_HOST   = ""
-      SMTP_PORT   = ""
-      SMTP_USER   = ""
-      SMTP_PASS   = ""
-      SMTP_SECURE = ""
+      SMTP_HOST   = local.settings.SMTP_HOST
+      SMTP_PORT   = local.settings.SMTP_PORT
+      SMTP_USER   = local.settings.SMTP_USER
+      SMTP_PASS   = local.settings.SMTP_PASS
+      SMTP_SECURE = local.settings.SMTP_SECURE
 
-      MAIL_FROM = ""
-      MAIL_TO   = ""
+      MAIL_FROM = local.settings.MAIL_FROM
+      MAIL_TO   = local.settings.MAIL_TO
     }
 
   }
