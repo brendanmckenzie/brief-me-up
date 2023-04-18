@@ -13,22 +13,15 @@
         <mj-text>
           {{md data.weather.body}}
         </mj-text>
-      </mj-column>
-    </mj-section>
-
-    <mj-section>
-      <mj-column width="100%">
+        <mj-text>
+          {{md data.news.body}}
+        </mj-text>
         <mj-text font-size="12px">
-          <strong>WORKOUT OF THE DAY</strong>
+          <strong>WORKOUT</strong>
         </mj-text>
         <mj-text>
           {{md data.workout.body}}
         </mj-text>
-      </mj-column>
-    </mj-section>
-
-    <mj-section>
-      <mj-column width="100%">
         <mj-text font-size="12px">
           <strong>WORD OF THE DAY</strong>
         </mj-text>

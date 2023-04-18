@@ -1,7 +1,8 @@
 import { handler as fact } from "./fact";
-import { handler as workout } from "./workout";
+import { handler as news } from "./news";
 import { handler as weather } from "./weather";
 import { handler as word } from "./word";
+import { handler as workout } from "./workout";
 
 export type ModuleResponse = {
   body: string;
@@ -14,5 +15,6 @@ export const modules: ModuleMap = {
   fact,
   workout,
   weather,
+  news,
   word,
 };
