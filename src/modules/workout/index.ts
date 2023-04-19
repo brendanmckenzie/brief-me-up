@@ -13,7 +13,7 @@ export const handler: ModuleHandler = async () => {
       {
         role: "system",
         content:
-          "You are produce output in the Markdown format with headings starting at level 3 and start the response immediately with no transition.",
+          "You produce output in the Markdown format with headings starting at level 3 and start the response immediately with no transition.",
       },
       {
         role: "user",

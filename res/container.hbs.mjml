@@ -2,37 +2,46 @@
   <mj-head>
     <mj-title>Brief Me Up</mj-title>
     <mj-attributes>
-      <mj-all font-family="sans-serif"></mj-all>
-      <mj-text font-weight="300" font-size="16px" color="#616161" line-height="24px"></mj-text>
+      <mj-font name="Inter" href="https://fonts.googleapis.com/css?family=Inter" />
+      <mj-all font-family="Inter, sans-serif"></mj-all>
+      <mj-text font-weight="300" font-size="16px" color="#666" line-height="24px"></mj-text>
       <mj-section padding="10px 0"></mj-section>
+      <mj-divider border-width="1px" border-color="#ddd"></mj-divider>
     </mj-attributes>
   </mj-head>
-  <mj-body>
+  <mj-body background-color="#fff">
     <mj-section>
       <mj-column width="100%">
+        <mj-text font-size="10px" align="center" padding="0" color="#999" text-transform="uppercase">
+          Weather
+        </mj-text>
         <mj-text>
           {{md data.weather.body}}
+        </mj-text>
+        <mj-divider></mj-divider>
+        <mj-text font-size="10px" align="center" padding="0" color="#999" text-transform="uppercase">
+          Headlines
         </mj-text>
         <mj-text>
           {{md data.news.body}}
         </mj-text>
         <mj-divider></mj-divider>
-        <mj-text font-size="12px">
-          <strong>WORKOUT</strong>
+        <mj-text font-size="10px" align="center" padding="0" color="#999" text-transform="uppercase">
+          Workout Of The Day
         </mj-text>
         <mj-text>
           {{md data.workout.body}}
         </mj-text>
         <mj-divider></mj-divider>
-        <mj-text font-size="12px">
-          <strong>WORD OF THE DAY</strong>
+        <mj-text font-size="10px" align="center" padding="0" color="#999" text-transform="uppercase">
+          Today&apos;s Word
         </mj-text>
         <mj-text>
           {{md data.word.body}}
         </mj-text>
         <mj-divider></mj-divider>
-        <mj-text font-size="12px">
-          <strong>FUN FACT</strong>
+        <mj-text font-size="10px" align="center" padding="0" color="#999" text-transform="uppercase">
+          Fun Fact
         </mj-text>
         <mj-text>
           {{md data.fact.body}}

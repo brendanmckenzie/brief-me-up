@@ -7,17 +7,17 @@ export const handler: ModuleHandler = async () => {
     messages: [
       {
         role: "system",
-        content: "You are a helpful assistant that provides daily fun facts.",
+        content:
+          "You are a helpful assistant that provides daily fun facts, excluding any preamble.",
       },
       {
         role: "system",
         content:
-          "You are produce output in the Markdown format and start the response immediately with no transition.",
+          "You produce output in the Markdown format and start the response immediately with no transition.",
       },
       {
         role: "user",
-        content:
-          "Tell me a fun historical fact, keep it light hearted, please.",
+        content: "Tell me a fun historical fact.",
       },
     ],
   });

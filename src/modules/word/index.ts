@@ -12,7 +12,7 @@ export const handler: ModuleHandler = async () => {
       },
       {
         role: "system",
-        content: "You are produce output in the Markdown format.",
+        content: "You produce output in the Markdown format.",
       },
       {
         role: "system",
