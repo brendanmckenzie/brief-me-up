@@ -67,6 +67,8 @@ resource "aws_lambda_function" "processing_lambda" {
 
       MAIL_FROM = local.settings.MAIL_FROM
       MAIL_TO   = local.settings.MAIL_TO
+
+      TZ = "Australia/Melbourne"
     }
 
   }
