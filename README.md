@@ -39,9 +39,3 @@ Contributions are welcome! If you would like to contribute to the project, pleas
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for more information.
-
-## TODO
-
-- [ ] Fix deployment process overwriting the .env file
-- [ ] Fix deployment process not including res folder
-- [ ] Fix deployment process for Lambda layer
