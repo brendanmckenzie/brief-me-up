@@ -17,7 +17,7 @@ export const handler: ModuleHandler = async () => {
       },
       {
         role: "user",
-        content: "Tell me a fun historical fact.",
+        content: "Tell me a fun fact.",
       },
     ],
   });
