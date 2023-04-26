@@ -1,3 +1,7 @@
+import { fetchConfig } from "../../config";
 import { handler } from "./index";
 
-handler().then((res) => console.log(res));
+(async () => {
+  const config = await fetchConfig();
+  const res = await handler(config);
+})();

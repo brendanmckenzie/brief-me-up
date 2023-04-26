@@ -1,3 +1,5 @@
+set -ex
+
 rm -rf dist/
 
 yarn

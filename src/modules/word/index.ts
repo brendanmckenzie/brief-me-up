@@ -1,8 +1,13 @@
+import { OpenAIApi, Configuration } from "openai";
 import { ModuleHandler } from "..";
-import { openai } from "../../shared/openai";
+import { Config } from "../../config";
 
-export const handler: ModuleHandler = async () => {
-  const response = await openai.createChatCompletion({
+export const handler: ModuleHandler = async (config: Config) => {
+  const client = new OpenAIApi(
+    new Configuration({ apiKey: config.OPENAI_API_KEY })
+  );
+
+  const response = await client.createChatCompletion({
     model: "gpt-3.5-turbo",
     messages: [
       {

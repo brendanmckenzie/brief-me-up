@@ -3,11 +3,15 @@ import { sendMail } from "./shared/email";
 import mjml2html from "mjml";
 import fs from "fs";
 import { hbs } from "./shared/hbs";
+import { fetchConfig } from "./config";
 
 export const main = async () => {
+  console.log("fetching config...");
+  const config = await fetchConfig();
+
   console.log("executing modules...");
   const entries = await Promise.all(
-    Object.keys(modules).map(async (key) => [key, await modules[key]()])
+    Object.keys(modules).map(async (key) => [key, await modules[key](config)])
   );
 
   const responses = Object.fromEntries(entries);
@@ -30,7 +34,5 @@ export const main = async () => {
   })}`;
 
   console.log("sending email...");
-  await sendMail(process.env.MAIL_TO!, subject, html);
+  await sendMail(config, config.MAIL_TO!, subject, html);
 };
-
-// main();

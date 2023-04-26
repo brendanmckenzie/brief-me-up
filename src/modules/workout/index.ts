@@ -1,8 +1,22 @@
+import { OpenAIApi, Configuration, CreateChatCompletionRequest } from "openai";
 import { ModuleHandler } from "..";
-import { openai } from "../../shared/openai";
+import { Config } from "../../config";
+import {
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 
-export const handler: ModuleHandler = async () => {
-  const response = await openai.createChatCompletion({
+export const handler: ModuleHandler = async (config: Config) => {
+  const key = dateToKey(new Date());
+
+  const client = new OpenAIApi(
+    new Configuration({ apiKey: config.OPENAI_API_KEY })
+  );
+
+  const yesterday = await fetchContext();
+
+  const input: CreateChatCompletionRequest = {
     model: "gpt-3.5-turbo",
     messages: [
       {
@@ -36,17 +50,77 @@ export const handler: ModuleHandler = async () => {
           "Saturday - long-form chipper workout.",
         ].join("; "),
       },
+      ...yesterday,
       {
         role: "user",
         content: [
           "Today is",
           new Date().toLocaleDateString("en-AU", {
             weekday: "long",
+            month: "long",
+            day: "2-digit",
+            year: "numeric",
           }),
         ].join(" "),
       },
     ],
-  });
+  };
+
+  const response = await client.createChatCompletion(input);
+
+  const transcript = [...input.messages, response.data.choices[0].message];
+
+  console.log({ transcript });
+
+  await storeTranscript(key, transcript);
+
+  console.log({ transcript });
 
   return { body: response.data.choices[0].message?.content ?? "" };
+};
+
+const storeTranscript = async (key: string, input: object): Promise<void> => {
+  const client = new S3Client({ region: "ap-southeast-2" });
+
+  client.send(
+    new PutObjectCommand({
+      Bucket: process.env.BUCKET,
+      ContentType: "application/json",
+      ContentEncoding: "utf-8",
+      Key: `workouts/${key}.json`,
+      Body: JSON.stringify(input, null, 2),
+    })
+  );
+};
+
+const fetchContext = async (): Promise<any[]> => {
+  // TODO: make this smarter by looking back further than 1 day
+  try {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const key = dateToKey(yesterday);
+    const client = new S3Client({ region: "ap-southeast-2" });
+    const dataRes = await client.send(
+      new GetObjectCommand({
+        Bucket: process.env.BUCKET,
+        Key: `workouts/${key}.json`,
+      })
+    );
+
+    const dataStr = await dataRes.Body?.transformToString("utf-8");
+
+    if (dataStr) {
+      const dataObj = JSON.parse(dataStr ?? "[]");
+
+      return dataObj.slice(-2);
+    } else {
+      return [];
+    }
+  } catch {
+    return [];
+  }
+};
+
+const dateToKey = (date: Date): string => {
+  return date.toISOString().substring(2, 10).replaceAll("-", "");
 };

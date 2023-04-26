@@ -12,16 +12,9 @@ provider "aws" {
   region = "ap-southeast-2"
 }
 
-data "aws_secretsmanager_secret_version" "settings" {
-  secret_id = "prod/briefmeup"
+resource "aws_s3_bucket" "storage" {
+  bucket = "briefmeup"
 }
-
-locals {
-  settings = jsondecode(
-    data.aws_secretsmanager_secret_version.settings.secret_string
-  )
-}
-
 
 data "local_file" "lambda_zip" {
   filename = "${path.module}/../build/function.zip"
@@ -40,7 +33,6 @@ resource "aws_lambda_layer_version" "nodemodules_layer" {
   compatible_architectures = ["arm64"]
 }
 
-
 resource "aws_lambda_function" "processing_lambda" {
   filename         = data.local_file.lambda_zip.filename
   function_name    = "briefmeup"
@@ -57,20 +49,9 @@ resource "aws_lambda_function" "processing_lambda" {
 
   environment {
     variables = {
-      OPENAI_API_KEY = local.settings.OPENAI_API_KEY
-
-      SMTP_HOST   = local.settings.SMTP_HOST
-      SMTP_PORT   = local.settings.SMTP_PORT
-      SMTP_USER   = local.settings.SMTP_USER
-      SMTP_PASS   = local.settings.SMTP_PASS
-      SMTP_SECURE = local.settings.SMTP_SECURE
-
-      MAIL_FROM = local.settings.MAIL_FROM
-      MAIL_TO   = local.settings.MAIL_TO
-
-      TZ = "Australia/Melbourne"
+      TZ     = "Australia/Melbourne"
+      BUCKET = aws_s3_bucket.storage.bucket
     }
-
   }
 }
 
@@ -105,6 +86,14 @@ data "aws_iam_policy_document" "policy_doc" {
       "logs:PutLogEvents"
     ]
     resources = ["*"]
+  }
+
+  statement {
+    actions = ["s3:*"]
+    resources = [
+      aws_s3_bucket.storage.arn,
+      "${aws_s3_bucket.storage.arn}/*"
+    ]
   }
 }
 
