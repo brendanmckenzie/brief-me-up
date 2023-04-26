@@ -6,6 +6,12 @@ terraform {
     }
   }
   required_version = ">= 1.3.0"
+
+  backend "s3" {
+    bucket = "briefmeup"
+    key    = "network/terraform.tfstate"
+    region = "ap-southeast-2"
+  }
 }
 
 provider "aws" {
