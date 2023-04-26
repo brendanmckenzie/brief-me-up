@@ -74,8 +74,6 @@ export const handler: ModuleHandler = async (config: Config) => {
 
   await storeTranscript(key, transcript);
 
-  console.log({ transcript });
-
   return { body: response.data.choices[0].message?.content ?? "" };
 };
 
@@ -94,7 +92,6 @@ const storeTranscript = async (key: string, input: object): Promise<void> => {
 };
 
 const fetchContext = async (): Promise<any[]> => {
-  // TODO: make this smarter by looking back further than 1 day
   try {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
@@ -112,6 +109,7 @@ const fetchContext = async (): Promise<any[]> => {
     if (dataStr) {
       const dataObj = JSON.parse(dataStr ?? "[]");
 
+      // TODO: make this smarter by looking back further than 1 day
       return dataObj.slice(-2);
     } else {
       return [];
