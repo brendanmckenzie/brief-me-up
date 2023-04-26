@@ -10,11 +10,11 @@ import {
 export const handler: ModuleHandler = async (config: Config) => {
   const key = dateToKey(new Date());
 
+  const yesterday = await fetchContext();
+
   const client = new OpenAIApi(
     new Configuration({ apiKey: config.OPENAI_API_KEY })
   );
-
-  const yesterday = await fetchContext();
 
   const input: CreateChatCompletionRequest = {
     model: "gpt-3.5-turbo",
@@ -70,8 +70,6 @@ export const handler: ModuleHandler = async (config: Config) => {
 
   const transcript = [...input.messages, response.data.choices[0].message];
 
-  console.log({ transcript });
-
   await storeTranscript(key, transcript);
 
   return { body: response.data.choices[0].message?.content ?? "" };
@@ -120,5 +118,8 @@ const fetchContext = async (): Promise<any[]> => {
 };
 
 const dateToKey = (date: Date): string => {
-  return date.toISOString().substring(2, 10).replaceAll("-", "");
+  return [date.getFullYear(), date.getMonth() + 1, date.getDate()]
+    .map((num) => num.toString().padStart(2, "0"))
+    .join("")
+    .substring(2);
 };

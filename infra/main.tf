@@ -95,6 +95,13 @@ data "aws_iam_policy_document" "policy_doc" {
       "${aws_s3_bucket.storage.arn}/*"
     ]
   }
+
+  statement {
+    actions = ["secretsmanager:GetSecretValue"]
+    resources = [
+      "arn:aws:secretsmanager:ap-southeast-2:705488526907:secret:prod/briefmeup-d1fECt"
+    ]
+  }
 }
 
 
