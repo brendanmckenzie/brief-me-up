@@ -1,11 +1,13 @@
-import { OpenAIApi, Configuration, CreateChatCompletionRequest } from "openai";
-import { ModuleHandler } from "..";
-import { Config } from "../../config";
 import {
   GetObjectCommand,
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
+import fs from "fs";
+import { Configuration, CreateChatCompletionRequest, OpenAIApi } from "openai";
+import { ModuleHandler } from "..";
+import { Config } from "../../config";
+import { hbs } from "../../shared/hbs";
 
 export const handler: ModuleHandler = async (config: Config) => {
   const key = dateToKey(new Date());
@@ -71,6 +73,7 @@ export const handler: ModuleHandler = async (config: Config) => {
   const transcript = [...input.messages, response.data.choices[0].message];
 
   await storeTranscript(key, transcript);
+  await storeHtml(key, response.data.choices[0].message?.content ?? "");
 
   return { body: response.data.choices[0].message?.content ?? "" };
 };
@@ -122,4 +125,23 @@ const dateToKey = (date: Date): string => {
     .map((num) => num.toString().padStart(2, "0"))
     .join("")
     .substring(2);
+};
+
+const storeHtml = async (key: string, body: string): Promise<void> => {
+  const client = new S3Client({ region: "ap-southeast-2" });
+
+  const template = hbs.compile(
+    fs.readFileSync("./res/workout.hbs").toString("utf8")
+  );
+  const html = template({ key, body });
+
+  client.send(
+    new PutObjectCommand({
+      Bucket: process.env.BUCKET,
+      ContentType: "text/html",
+      ContentEncoding: "utf-8",
+      Key: `public/workouts/${key}.html`,
+      Body: html,
+    })
+  );
 };
