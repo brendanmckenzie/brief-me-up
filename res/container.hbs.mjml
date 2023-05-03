@@ -27,7 +27,7 @@
         </mj-text>
         <mj-divider></mj-divider>
         <mj-text font-size="10px" align="center" padding="0" color="#999" text-transform="uppercase">
-          Workout Of The Day
+          Workout Of The Day &mdash; <a href="{{data.workout.url}}">View online</a>
         </mj-text>
         <mj-text>
           {{md data.workout.body}}

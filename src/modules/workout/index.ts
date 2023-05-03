@@ -75,7 +75,10 @@ export const handler: ModuleHandler = async (config: Config) => {
   await storeTranscript(key, transcript);
   await storeHtml(key, response.data.choices[0].message?.content ?? "");
 
-  return { body: response.data.choices[0].message?.content ?? "" };
+  return {
+    body: response.data.choices[0].message?.content ?? "",
+    url: `https://${process.env.WEB_ROOT}/workouts/${key}.html`,
+  };
 };
 
 const storeTranscript = async (key: string, input: object): Promise<void> => {

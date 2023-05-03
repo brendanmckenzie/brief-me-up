@@ -7,6 +7,7 @@ import { handler as workout } from "./workout";
 
 export type ModuleResponse = {
   body: string;
+  url?: string;
 };
 export type ModuleHandler = (config: Config) => Promise<ModuleResponse>;
 
