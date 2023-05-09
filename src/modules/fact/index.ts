@@ -22,7 +22,16 @@ export const handler: ModuleHandler = async (config: Config) => {
       },
       {
         role: "user",
-        content: "Tell me a fun fact.",
+        content: [
+          "Tell me a fact about something that happened on or around this day in history, today being.",
+          "Today is",
+          new Date().toLocaleDateString("en-AU", {
+            weekday: "long",
+            month: "long",
+            day: "2-digit",
+            year: "numeric",
+          }),
+        ].join(" "),
       },
     ],
   });
