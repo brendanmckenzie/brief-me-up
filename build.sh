@@ -16,7 +16,7 @@ mkdir build/nodejs/
 
 echo "zipping lambda function"
 pushd dist
-zip -r ../build/function.zip .
+zip -qr ../build/function.zip .
 popd
 
 echo "preparing node_modules layer"
@@ -25,17 +25,10 @@ pushd build
 pushd nodejs/node_modules
 
 echo "removing unnecessary files"
-rm -rf aws-sdk
-rm -rf @types
-rm -rf typescript
-rm -rf ts-node
-rm -rf aws-sdk
-rm -rf aws-lambda
-rm -rf @tsconfig
-rm -rf .bin
+rm -rf aws-sdk @types typescript ts-node @aws-sdk aws-lambda @tsconfig .bin
 find . -name "*.md" -delete
 
 echo "zipping node_modules layer"
 popd
-zip -r ../build/layer.zip .
+zip -qr ../build/layer.zip .
 popd
