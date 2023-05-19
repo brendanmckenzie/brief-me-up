@@ -2,6 +2,8 @@ set -ex
 
 rm -rf dist/
 
+PKG_HASH=$(shasum --algorithm 1 yarn.lock | awk '{print $1}')
+
 yarn
 echo "compiling typescript"
 yarn run tsc
@@ -30,5 +32,5 @@ find . -name "*.md" -delete
 
 echo "zipping node_modules layer"
 popd
-zip -qr ../build/layer.zip .
+zip -qr ../build/layer.$PKG_HASH.zip .
 popd

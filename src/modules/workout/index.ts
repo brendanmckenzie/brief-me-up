@@ -1,8 +1,4 @@
-import {
-  GetObjectCommand,
-  PutObjectCommand,
-  S3Client,
-} from "@aws-sdk/client-s3";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import fs from "fs";
 import { Configuration, CreateChatCompletionRequest, OpenAIApi } from "openai";
 import { ModuleHandler } from "..";
@@ -11,8 +7,6 @@ import { hbs } from "../../shared/hbs";
 
 export const handler: ModuleHandler = async (config: Config) => {
   const key = dateToKey(new Date());
-
-  const yesterday = await fetchContext();
 
   const client = new OpenAIApi(
     new Configuration({ apiKey: config.OPENAI_API_KEY })
@@ -29,13 +23,12 @@ export const handler: ModuleHandler = async (config: Config) => {
       {
         role: "system",
         content:
-          // "Output will be in JSON format, there should be 3 fields: `warmup`, `strength`, `workout`",
           "You produce output in the Markdown format with headings starting at level 3 and start the response immediately with no transition.",
       },
       {
         role: "user",
         content:
-          "Could you please generate a workout for my day today based on the following schedule - include a detailed warmup with stretches, strength component and a metcon",
+          "Could you please generate a workout for today based on the following schedule - include a detailed warmup with stretches, strength component and a metcon",
       },
       {
         role: "user",
@@ -52,7 +45,6 @@ export const handler: ModuleHandler = async (config: Config) => {
           "Saturday - long-form chipper workout.",
         ].join("; "),
       },
-      ...yesterday,
       {
         role: "user",
         content: [
@@ -70,10 +62,10 @@ export const handler: ModuleHandler = async (config: Config) => {
 
   const response = await client.createChatCompletion(input);
 
-  const transcript = [...input.messages, response.data.choices[0].message];
+  const transcript = [...input.messages, response.data.choices[0].message!];
 
   await storeTranscript(key, transcript);
-  await storeHtml(key, response.data.choices[0].message?.content ?? "");
+  await store(key, response.data.choices[0].message?.content ?? "");
 
   return {
     body: response.data.choices[0].message?.content ?? "",
@@ -95,34 +87,6 @@ const storeTranscript = async (key: string, input: object): Promise<void> => {
   );
 };
 
-const fetchContext = async (): Promise<any[]> => {
-  try {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const key = dateToKey(yesterday);
-    const client = new S3Client({ region: "ap-southeast-2" });
-    const dataRes = await client.send(
-      new GetObjectCommand({
-        Bucket: process.env.BUCKET,
-        Key: `workouts/${key}.json`,
-      })
-    );
-
-    const dataStr = await dataRes.Body?.transformToString("utf-8");
-
-    if (dataStr) {
-      const dataObj = JSON.parse(dataStr ?? "[]");
-
-      // TODO: make this smarter by looking back further than 1 day
-      return dataObj.slice(-2);
-    } else {
-      return [];
-    }
-  } catch {
-    return [];
-  }
-};
-
 const dateToKey = (date: Date): string => {
   return [date.getFullYear(), date.getMonth() + 1, date.getDate()]
     .map((num) => num.toString().padStart(2, "0"))
@@ -130,7 +94,7 @@ const dateToKey = (date: Date): string => {
     .substring(2);
 };
 
-const storeHtml = async (key: string, body: string): Promise<void> => {
+const store = async (key: string, body: string): Promise<void> => {
   const client = new S3Client({ region: "ap-southeast-2" });
 
   const template = hbs.compile(
@@ -145,6 +109,16 @@ const storeHtml = async (key: string, body: string): Promise<void> => {
       ContentEncoding: "utf-8",
       Key: `public/workouts/${key}.html`,
       Body: html,
+    })
+  );
+
+  client.send(
+    new PutObjectCommand({
+      Bucket: process.env.BUCKET,
+      ContentType: "text/markdown",
+      ContentEncoding: "utf-8",
+      Key: `public/workouts/${key}.md`,
+      Body: body,
     })
   );
 };

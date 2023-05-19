@@ -3,12 +3,15 @@ data "local_file" "lambda_zip" {
 }
 
 data "local_file" "layer_zip" {
-  filename = "${path.module}/../build/layer.zip"
+  filename = "${path.module}/../build/layer.${data.local_file.layer_pkg_zip.content_sha1}.zip"
+}
+data "local_file" "layer_pkg_zip" {
+  filename = "${path.module}/../yarn.lock"
 }
 
 resource "aws_lambda_layer_version" "nodemodules_layer" {
   filename         = data.local_file.layer_zip.filename
-  source_code_hash = data.local_file.layer_zip.content_base64sha256
+  # source_code_hash = data.local_file.layer_zip.content_base64sha256
   layer_name       = "briefmeup_nodemodules_layer"
 
   compatible_runtimes      = ["nodejs18.x"]
