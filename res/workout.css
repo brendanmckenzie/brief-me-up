@@ -13,6 +13,13 @@ article {
   line-height: 1.4;
 }
 
+button {
+  padding: 1rem 2rem;
+  display: block;
+  width: 100%;
+  font-size: inherit;
+}
+
 @media only screen and (min-width: 981px) {
   body {
     font-size: 16px;
@@ -21,5 +28,9 @@ article {
   article {
     margin: 0 auto;
     max-width: 780px;
+  }
+
+  button {
+    display: none;
   }
 }

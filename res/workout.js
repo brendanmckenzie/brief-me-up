@@ -1,15 +1,36 @@
-let wakeLock = null;
+document.addEventListener("DOMContentLoaded", () => {
+  let lock;
 
-const requestWakeLock = async () => {
-  try {
-    wakeLock = await navigator.wakeLock.request("screen");
-    wakeLock.addEventListener("release", () => {
-      console.log("Screen Wake Lock released:", wakeLock.released);
-    });
-    console.log("Screen Wake Lock released:", wakeLock.released);
-  } catch (err) {
-    // TODO: fix this. NotAllowedError, Permission was denied
-    console.error(`${err.name}, ${err.message}`);
-  }
-};
-requestWakeLock();
+  const strings = {
+    activate: "Activate screen lock",
+    release: "Release screen lock",
+  };
+
+  const btn = document.createElement("button");
+  btn.innerText = strings.activate;
+  btn.style = "";
+
+  btn.addEventListener("click", async () => {
+    btn.disabled = true;
+    if (lock) {
+      lock.release();
+      return;
+    }
+
+    try {
+      lock = await navigator.wakeLock.request("screen");
+      btn.innerText = strings.release;
+      btn.disabled = false;
+
+      lock.addEventListener("release", () => {
+        btn.disabled = false;
+        btn.innerText = strings.activate;
+        lock = null;
+      });
+    } catch (e) {
+      alert(`Caught ${e.name} acquiring lock: ${e.message}`);
+    }
+  });
+
+  document.body.appendChild(btn);
+});
