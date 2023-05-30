@@ -88,3 +88,10 @@ resource "aws_s3_object" "workoutcss" {
 
   etag = filemd5("../res/workout.css")
 }
+resource "aws_s3_object" "workoutjs" {
+  bucket = aws_s3_bucket.storage.id
+  key    = "public/js/workout.js"
+  source = "../res/workout.js"
+
+  etag = filemd5("../res/workout.js")
+}
