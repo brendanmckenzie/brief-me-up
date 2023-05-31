@@ -1,7 +1,5 @@
 import {
   GetSecretValueCommand,
-  ListSecretsCommand,
-  SecretListEntry,
   SecretsManagerClient,
 } from "@aws-sdk/client-secrets-manager";
 
