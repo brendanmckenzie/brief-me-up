@@ -10,13 +10,14 @@ export const handler: ModuleHandler = async () => {
   const feed = await parser.parseURL("https://www.theage.com.au/rss/feed.xml");
   return {
     body: feed.items
-      .filter((_, idx) => idx < 7)
+      .filter((item) => !["Sport"].some((cat) => item.category.includes(cat)))
+      .filter((_, idx) => idx < 9)
       .map(
         (item) =>
           `**[${item.title}](${item.link?.replace(
             "?ref=rss&utm_medium=rss&utm_source=rss_feed",
             ""
-          )})** ${item.category}  \n${item.description}`
+          )})** _${item.category}_  \n${item.description}`
       )
       .join("\n\n"),
   };
