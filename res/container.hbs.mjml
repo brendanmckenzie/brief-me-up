@@ -12,6 +12,9 @@
   <mj-body background-color="#fff">
     <mj-section>
       <mj-column width="100%">
+        <mj-text font-size="12px" align="center" padding="0" color="#999" text-transform="uppercase">
+          JUMP TO | <a href="#headlines">HEADLINES</a> | <a href="#workout">WORKOUT</a> | <a href="#word">WORD</a> | <a href="#fact">FACT</a>
+        </mj-text>
         <mj-text font-size="10px" align="center" padding="0" color="#999" text-transform="uppercase">
           Weather
         </mj-text>
@@ -20,28 +23,28 @@
         </mj-text>
         <mj-divider></mj-divider>
         <mj-text font-size="10px" align="center" padding="0" color="#999" text-transform="uppercase">
-          Headlines
+          <a name="headlines">Headlines</a>
         </mj-text>
         <mj-text>
           {{md data.news.body}}
         </mj-text>
         <mj-divider></mj-divider>
         <mj-text font-size="10px" align="center" padding="0" color="#999" text-transform="uppercase">
-          Workout Of The Day &mdash; <a href="{{data.workout.url}}">View online</a>
+          <a name="workout">Workout</a> Of The Day &mdash; <a href="{{data.workout.url}}">View online</a>
         </mj-text>
         <mj-text>
           {{md data.workout.body}}
         </mj-text>
         <mj-divider></mj-divider>
         <mj-text font-size="10px" align="center" padding="0" color="#999" text-transform="uppercase">
-          Today&apos;s Word
+          Today&apos;s <a name="word">Word</a>
         </mj-text>
         <mj-text>
           {{md data.word.body}}
         </mj-text>
         <mj-divider></mj-divider>
         <mj-text font-size="10px" align="center" padding="0" color="#999" text-transform="uppercase">
-          Fun Fact
+          Fun <a name="fact">Fact</a>
         </mj-text>
         <mj-text>
           {{md data.fact.body}}
