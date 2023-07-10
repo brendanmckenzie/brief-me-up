@@ -4,6 +4,7 @@ import { Configuration, CreateChatCompletionRequest, OpenAIApi } from "openai";
 import { ModuleHandler } from "..";
 import { Config } from "../../config";
 import { hbs } from "../../shared/hbs";
+import { createLemmyClient } from "../../shared/lemmy";
 
 export const handler: ModuleHandler = async (config: Config) => {
   const key = dateToKey(new Date());
@@ -64,12 +65,19 @@ export const handler: ModuleHandler = async (config: Config) => {
 
   const transcript = [...input.messages, response.data.choices[0].message!];
 
+  const url = `https://${process.env.WEB_ROOT}/workouts/${key}.html`;
+
   await storeTranscript(key, transcript);
-  await store(key, response.data.choices[0].message?.content ?? "");
+  await store(
+    config,
+    key,
+    url,
+    response.data.choices[0].message?.content ?? ""
+  );
 
   return {
     body: response.data.choices[0].message?.content ?? "",
-    url: `https://${process.env.WEB_ROOT}/workouts/${key}.html`,
+    url,
   };
 };
 
@@ -94,7 +102,12 @@ const dateToKey = (date: Date): string => {
     .substring(2);
 };
 
-const store = async (key: string, body: string): Promise<void> => {
+const store = async (
+  config: Config,
+  key: string,
+  url: string,
+  body: string
+): Promise<void> => {
   const client = new S3Client({ region: "ap-southeast-2" });
 
   const template = hbs.compile(
@@ -121,4 +134,14 @@ const store = async (key: string, body: string): Promise<void> => {
       Body: body,
     })
   );
+
+  const { client: lemmy, jwt } = await createLemmyClient(config);
+
+  lemmy.createPost({
+    name: key,
+    community_id: 61 /*"workouts"*/,
+    body,
+    url,
+    auth: jwt!,
+  });
 };
