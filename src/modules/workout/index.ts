@@ -24,12 +24,12 @@ export const handler: ModuleHandler = async (config: Config) => {
       {
         role: "system",
         content:
-          "You produce output in the Markdown format with headings starting at level 3 and start the response immediately with no transition.",
+          "You produce output in the JSON format with 4 fields: `warmup`, `strength`, `workout` and `summary`.  Each field should be a Markdown formatted string, please exclude a title introducing the field.",
       },
       {
         role: "user",
         content:
-          "Could you please generate a workout for today based on the following schedule - include a detailed warmup with stretches, strength component and a metcon",
+          "Generate a workout for today based on the following schedule - include a detailed warmup with stretches, strength component and a metcon",
       },
       {
         role: "user",
@@ -43,7 +43,7 @@ export const handler: ModuleHandler = async (config: Config) => {
           "Wednesday - gymnastics (handstands/muscle ups/rings/bars/etc)",
           "Thursday - snatches",
           "Friday - deadlift and bench press",
-          "Saturday - long-form chipper workout.",
+          "Saturday - long-form chipper workout, strength is optional today as the focus is on a longer workout.",
         ].join("; "),
       },
       {
@@ -62,23 +62,41 @@ export const handler: ModuleHandler = async (config: Config) => {
   };
 
   const response = await client.createChatCompletion(input);
-
   const transcript = [...input.messages, response.data.choices[0].message!];
 
   const url = `https://${process.env.WEB_ROOT}/workouts/${key}.html`;
 
-  await storeTranscript(key, transcript);
-  await store(
-    config,
-    key,
-    url,
-    response.data.choices[0].message?.content ?? ""
-  );
+  try {
+    const data = JSON.parse(response.data.choices[0].message!.content);
 
-  return {
-    body: response.data.choices[0].message?.content ?? "",
-    url,
-  };
+    const markdown = `### Warmup
+
+${data.warmup}
+
+### Strength
+
+${data.strength}
+
+### Workout
+
+${data.workout}
+
+### Summary
+
+${data.summary}`;
+
+    await storeTranscript(key, transcript);
+    await store(config, key, url, data.summary, markdown);
+
+    return {
+      body: markdown,
+      url,
+    };
+  } catch (ex) {
+    console.error(ex);
+    console.error(response.data.choices[0].message!.content);
+    return { body: "failed to load workout" };
+  }
 };
 
 const storeTranscript = async (key: string, input: object): Promise<void> => {
@@ -106,6 +124,7 @@ const store = async (
   config: Config,
   key: string,
   url: string,
+  summary: string,
   body: string
 ): Promise<void> => {
   const client = new S3Client({ region: "ap-southeast-2" });
@@ -140,8 +159,9 @@ const store = async (
   lemmy.createPost({
     name: key,
     community_id: 61 /*"workouts"*/,
-    body,
+    body: summary + "\n\nPost your workout results in the comments.",
     url,
     auth: jwt!,
+    nsfw: false,
   });
 };
