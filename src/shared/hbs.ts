@@ -8,7 +8,7 @@ hbs.registerHelper("md", (input: string) => {
     return "";
   }
 
-  const md = new showdown.Converter();
+  const md = new showdown.Converter({ noHeaderId: true });
 
   return new Handlebars.SafeString(md?.makeHtml(input));
 });
