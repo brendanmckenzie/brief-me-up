@@ -47,15 +47,11 @@ export const handler: ModuleHandler = async (config: Config) => {
   try {
     const data = JSON.parse(response.data.choices[0].message!.content);
 
-    const body = `**${data.word}**
+    const body = `## ${data.word}
 
-**Definition:**
+**Definition:** ${data.definition}
 
-${data.definition}
-
-**Etymology:**
-
-${data.etymology}`;
+**Etymology:** ${data.etymology}`;
 
     return { body };
   } catch (ex) {

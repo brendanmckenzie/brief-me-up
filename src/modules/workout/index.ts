@@ -67,7 +67,12 @@ export const handler: ModuleHandler = async (config: Config) => {
   const url = `https://${process.env.WEB_ROOT}/workouts/${key}.html`;
 
   try {
-    const data = JSON.parse(response.data.choices[0].message!.content);
+    const contentRaw = response.data.choices[0].message!.content;
+    const contentJson = contentRaw.substring(
+      contentRaw.indexOf("{"),
+      contentRaw.lastIndexOf("}") + 1
+    );
+    const data = JSON.parse(contentJson);
 
     const markdown = `### Warmup
 
