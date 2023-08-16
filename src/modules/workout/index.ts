@@ -24,12 +24,12 @@ export const handler: ModuleHandler = async (config: Config) => {
       {
         role: "system",
         content:
-          "You produce output in the JSON format with 4 fields: `warmup`, `strength`, `workout` and `summary`.  Each field should be a Markdown formatted string, please exclude a title introducing the field.",
+          "Output must be in the JSON format with 4 fields: `warmup`, `strength`, `workout` and `summary`.  Each field should be a Markdown formatted string, please exclude a title introducing the field.",
       },
       {
         role: "user",
         content:
-          "Generate a workout for today based on the following schedule - include a detailed warmup with stretches, strength component and a metcon",
+          "Generate the JSON for a workout for today based on the following schedule - include a detailed warmup with stretches, strength component and a metcon",
       },
       {
         role: "user",
