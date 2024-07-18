@@ -1,20 +1,19 @@
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import fs from "fs";
-import { Configuration, CreateChatCompletionRequest, OpenAIApi } from "openai";
+import { OpenAI } from "openai";
 import { ModuleHandler } from "..";
 import { Config } from "../../config";
 import { hbs } from "../../shared/hbs";
 import { createLemmyClient } from "../../shared/lemmy";
+import { ChatCompletionCreateParamsNonStreaming } from "openai/resources/chat";
 
 export const handler: ModuleHandler = async (config: Config) => {
   const key = dateToKey(new Date());
 
-  const client = new OpenAIApi(
-    new Configuration({ apiKey: config.OPENAI_API_KEY })
-  );
+  const client = new OpenAI({ apiKey: config.OPENAI_API_KEY });
 
-  const input: CreateChatCompletionRequest = {
-    model: "gpt-3.5-turbo",
+  const input: ChatCompletionCreateParamsNonStreaming = {
+    model: "gpt-4o",
     messages: [
       {
         role: "system",
@@ -61,13 +60,13 @@ export const handler: ModuleHandler = async (config: Config) => {
     ],
   };
 
-  const response = await client.createChatCompletion(input);
-  const transcript = [...input.messages, response.data.choices[0].message!];
+  const response = await client.chat.completions.create(input);
+  const transcript = [...input.messages, response.choices[0].message!];
 
   const url = `https://${process.env.WEB_ROOT}/workouts/${key}.html`;
 
   try {
-    const contentRaw = response.data.choices[0].message!.content;
+    const contentRaw = response.choices[0].message!.content!;
     const contentJson = contentRaw.substring(
       contentRaw.indexOf("{"),
       contentRaw.lastIndexOf("}") + 1
@@ -99,7 +98,7 @@ ${data.summary}`;
     };
   } catch (ex) {
     console.error(ex);
-    console.error(response.data.choices[0].message!.content);
+    console.error(response.choices[0].message!.content);
     return { body: "failed to load workout" };
   }
 };
@@ -161,12 +160,11 @@ const store = async (
 
   const { client: lemmy, jwt } = await createLemmyClient(config);
 
-  lemmy.createPost({
+  await lemmy.createPost({
     name: key,
     community_id: 61 /*"workouts"*/,
     body: summary + "\n\nPost your workout results in the comments.",
     url,
-    auth: jwt!,
     nsfw: false,
   });
 };

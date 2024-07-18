@@ -11,5 +11,7 @@ export const createLemmyClient = async (config: Config) => {
 
   const { jwt } = await client.login(loginForm);
 
+  client.setHeaders({ Authorization: `Bearer ${jwt}` });
+
   return { client, jwt };
 };

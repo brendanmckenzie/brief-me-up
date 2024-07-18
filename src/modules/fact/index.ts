@@ -1,14 +1,12 @@
-import { Configuration, OpenAIApi } from "openai";
+import { OpenAI } from "openai";
 import { ModuleHandler } from "..";
 import { Config } from "../../config";
 
 export const handler: ModuleHandler = async (config: Config) => {
-  const client = new OpenAIApi(
-    new Configuration({ apiKey: config.OPENAI_API_KEY })
-  );
+  const client = new OpenAI({ apiKey: config.OPENAI_API_KEY });
 
-  const response = await client.createChatCompletion({
-    model: "gpt-3.5-turbo",
+  const response = await client.chat.completions.create({
+    model: "gpt-4o",
     messages: [
       {
         role: "system",
@@ -36,5 +34,5 @@ export const handler: ModuleHandler = async (config: Config) => {
     ],
   });
 
-  return { body: response.data.choices[0].message?.content ?? "" };
+  return { body: response.choices[0].message?.content ?? "" };
 };

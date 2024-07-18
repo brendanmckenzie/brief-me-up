@@ -1,14 +1,12 @@
-import { OpenAIApi, Configuration } from "openai";
+import { OpenAI } from "openai";
 import { ModuleHandler } from "..";
 import { Config } from "../../config";
 
 export const handler: ModuleHandler = async (config: Config) => {
-  const client = new OpenAIApi(
-    new Configuration({ apiKey: config.OPENAI_API_KEY })
-  );
+  const client = new OpenAI({ apiKey: config.OPENAI_API_KEY });
 
-  const response = await client.createChatCompletion({
-    model: "gpt-3.5-turbo",
+  const response = await client.chat.completions.create({
+    model: "gpt-4o",
     messages: [
       {
         role: "system",
@@ -45,7 +43,7 @@ export const handler: ModuleHandler = async (config: Config) => {
   });
 
   try {
-    const data = JSON.parse(response.data.choices[0].message!.content);
+    const data = JSON.parse(response.choices[0].message!.content ?? "{}");
 
     const body = `## ${data.word}
 
@@ -56,7 +54,7 @@ export const handler: ModuleHandler = async (config: Config) => {
     return { body };
   } catch (ex) {
     console.error(ex);
-    console.error(response.data.choices[0].message!.content);
+    console.error(response.choices[0].message!.content);
     return { body: "failed to load word" };
   }
 };
