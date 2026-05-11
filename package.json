@@ -4,22 +4,23 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.616.0",
-    "@aws-sdk/client-secrets-manager": "^3.616.0",
+    "@anthropic-ai/sdk": "^0.95.2",
+    "@aws-sdk/client-s3": "^3.1045.0",
+    "@aws-sdk/client-secrets-manager": "^3.1045.0",
     "@types/mjml": "^4.7.4",
     "aws-lambda": "^1.0.7",
-    "handlebars": "^4.7.8",
+    "handlebars": "^4.7.9",
     "lemmy-js-client": "^0.20.0-alpha.1",
     "mjml": "^4.15.3",
     "nodemailer": "^6.9.14",
-    "openai": "^4.52.7",
     "rss-parser": "^3.13.0",
     "showdown": "^2.1.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.3",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@types/node": "^20.14.11",
+    "@types/node": "22",
     "@types/nodemailer": "^6.4.15",
     "@types/showdown": "^2.0.6"
   },

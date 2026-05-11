@@ -1,60 +1,50 @@
-import { OpenAI } from "openai";
+import Anthropic from "@anthropic-ai/sdk";
+import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
+import { z } from "zod";
 import { ModuleHandler } from "..";
 import { Config } from "../../config";
 
-export const handler: ModuleHandler = async (config: Config) => {
-  const client = new OpenAI({ apiKey: config.OPENAI_API_KEY });
+const WordSchema = z.object({
+  word: z.string(),
+  definition: z.string(),
+  etymology: z.string(),
+});
 
-  const response = await client.chat.completions.create({
-    model: "gpt-4o",
-    messages: [
-      {
-        role: "system",
-        content:
-          "You are a helpful assistant that provides an interesting, unique word each day without any preable.  You speak Australian English.",
-      },
-      {
-        role: "system",
-        content:
-          "You produce output in the JSON format with 3 fields: `word`, `definition`, and `etymology`.  Each field should be a plain text string, please exclude a title introducing the field.",
-      },
-      {
-        role: "system",
-        content: "Please start the response immediately with no transition.",
-      },
-      {
-        role: "user",
-        content:
-          "Could you please generate a word of the day with a definition and etymology if appropriate.",
-      },
-      {
-        role: "user",
-        content: [
-          "Today is",
-          new Date().toLocaleDateString("en-AU", {
-            weekday: "long",
-            month: "long",
-            day: "2-digit",
-            year: "numeric",
-          }),
-        ].join(" "),
-      },
-    ],
+export const handler: ModuleHandler = async (config: Config) => {
+  const client = new Anthropic({ apiKey: config.ANTHROPIC_API_KEY });
+
+  const today = new Date().toLocaleDateString("en-AU", {
+    weekday: "long",
+    month: "long",
+    day: "2-digit",
+    year: "numeric",
   });
 
-  try {
-    const data = JSON.parse(response.choices[0].message!.content ?? "{}");
+  const response = await client.beta.messages.parse({
+    model: "claude-opus-4-7",
+    max_tokens: 1024,
+    system:
+      "You provide an interesting, unique word each day without any preamble. You speak Australian English.",
+    messages: [
+      {
+        role: "user",
+        content: `Today is ${today}. Generate a word of the day with a definition and etymology if appropriate.`,
+      },
+    ],
+    output_format: betaZodOutputFormat(WordSchema),
+  });
 
-    const body = `## ${data.word}
+  const data = response.parsed_output;
+  if (!data) {
+    console.error("failed to parse word of the day");
+    return { body: "failed to load word" };
+  }
+
+  const body = `## ${data.word}
 
 **Definition:** ${data.definition}
 
 **Etymology:** ${data.etymology}`;
 
-    return { body };
-  } catch (ex) {
-    console.error(ex);
-    console.error(response.choices[0].message!.content);
-    return { body: "failed to load word" };
-  }
+  return { body };
 };

@@ -14,7 +14,7 @@ resource "aws_lambda_layer_version" "nodemodules_layer" {
   # source_code_hash = data.local_file.layer_zip.content_base64sha256
   layer_name       = "briefmeup_nodemodules_layer"
 
-  compatible_runtimes      = ["nodejs18.x"]
+  compatible_runtimes      = ["nodejs24.x"]
   compatible_architectures = ["arm64"]
 }
 
@@ -28,7 +28,7 @@ resource "aws_lambda_function" "processing_lambda" {
   layers = [aws_lambda_layer_version.nodemodules_layer.arn]
 
   architectures = ["arm64"]
-  runtime       = "nodejs18.x"
+  runtime       = "nodejs24.x"
   timeout       = 900
   memory_size   = 512
 

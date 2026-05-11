@@ -10,11 +10,19 @@ export const main = async () => {
   const config = await fetchConfig();
 
   console.log("executing modules...");
-  const entries = await Promise.all(
-    Object.keys(modules).map(async (key) => [key, await modules[key](config)])
+  const keys = Object.keys(modules);
+  const settled = await Promise.allSettled(
+    keys.map((key) => modules[key](config))
   );
 
-  const responses = Object.fromEntries(entries);
+  const responses = Object.fromEntries(
+    settled.map((result, idx) => {
+      const key = keys[idx];
+      if (result.status === "fulfilled") return [key, result.value];
+      console.error(`module "${key}" failed:`, result.reason);
+      return [key, { body: `*Module "${key}" failed to load.*` }];
+    })
+  );
 
   console.log("generating template...");
   const template = hbs.compile(
