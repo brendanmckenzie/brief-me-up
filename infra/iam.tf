@@ -2,11 +2,12 @@ resource "aws_iam_role" "processing_lambda_role" {
   name               = "briefmeup"
   path               = "/service-role/"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
+}
 
-  inline_policy {
-    name   = "briefmeup_policy"
-    policy = data.aws_iam_policy_document.policy_doc.json
-  }
+resource "aws_iam_role_policy" "processing_lambda_policy" {
+  name   = "briefmeup_policy"
+  role   = aws_iam_role.processing_lambda_role.id
+  policy = data.aws_iam_policy_document.policy_doc.json
 }
 
 data "aws_iam_policy_document" "assume_role" {
