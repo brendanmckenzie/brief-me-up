@@ -23,12 +23,16 @@ export const handler: ModuleHandler = async (config: Config) => {
   const response = await client.beta.messages.parse({
     model: "claude-opus-4-7",
     max_tokens: 1024,
-    system:
-      "You provide an interesting, unique word each day without any preamble. You speak Australian English.",
+    system: [
+      "You provide an interesting, uncommon English word each day, without any preamble.",
+      "Write in Australian English spelling, but pick words from standard English vocabulary — avoid slang, expletives, slurs, regional epithets, and anything offensive, vulgar, sexual, violent, or politically charged.",
+      "Favour evocative, useful words across science, nature, emotion, philosophy, craft, food, weather, and everyday life — words a curious adult would enjoy adding to their vocabulary.",
+      "Definitions should be clear and concise; etymology should be factual and brief.",
+    ].join(" "),
     messages: [
       {
         role: "user",
-        content: `Today is ${today}. Generate a word of the day with a definition and etymology if appropriate.`,
+        content: `Today is ${today}. Generate a word of the day with a definition and a brief etymology.`,
       },
     ],
     output_format: betaZodOutputFormat(WordSchema),
