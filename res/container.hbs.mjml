@@ -1,53 +1,141 @@
 <mjml>
   <mj-head>
     <mj-title>Brief Me Up</mj-title>
+    <mj-preview>Your daily briefing — weather, news, workout, word & fact</mj-preview>
+    <mj-font name="Fraunces" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,800;1,400&display=swap" />
+    <mj-font name="Inter" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" />
     <mj-attributes>
-      <mj-font name="Inter" href="https://fonts.googleapis.com/css?family=Inter" />
-      <mj-all font-family="Inter, sans-serif"></mj-all>
-      <mj-text font-weight="300" font-size="16px" color="#666" line-height="24px"></mj-text>
-      <mj-section padding="10px 0"></mj-section>
-      <mj-divider border-width="1px" border-color="#ddd"></mj-divider>
+      <mj-all font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif"></mj-all>
+      <mj-text font-weight="400" font-size="16px" color="#2b2b2b" line-height="26px"></mj-text>
+      <mj-section padding="0"></mj-section>
     </mj-attributes>
+    <mj-style inline="inline">
+      h1, h2, h3, h4, h5 { font-family: Fraunces, Georgia, serif; color: #1a1a1a; font-weight: 600; letter-spacing: -0.01em; }
+      h2 { font-size: 22px; margin: 0 0 8px; }
+      h3 { font-size: 18px; margin: 18px 0 6px; }
+      a { color: #c2410c; text-decoration: none; border-bottom: 1px solid rgba(194, 65, 12, 0.3); }
+      a:hover { border-bottom-color: #c2410c; }
+      p { margin: 0 0 12px; }
+      ul, ol { margin: 0 0 12px; padding-left: 22px; }
+      li { margin-bottom: 4px; }
+      strong { color: #1a1a1a; font-weight: 600; }
+      blockquote { border-left: 3px solid #c2410c; margin: 12px 0; padding: 4px 0 4px 14px; color: #555; font-style: italic; }
+      code { background: #f0ebe1; padding: 1px 5px; border-radius: 3px; font-size: 14px; }
+    </mj-style>
   </mj-head>
-  <mj-body background-color="#fff">
-    <mj-section>
-      <mj-column width="100%">
-        <mj-text font-size="12px" align="center" padding="0" color="#999" text-transform="uppercase">
-          JUMP TO | <a href="#headlines">HEADLINES</a> | <a href="#workout">WORKOUT</a> | <a href="#word">WORD</a> | <a href="#fact">FACT</a>
+  <mj-body background-color="#f4efe5">
+    <!-- Masthead -->
+    <mj-section padding="36px 24px 8px">
+      <mj-column>
+        <mj-text align="center" font-size="11px" letter-spacing="3px" color="#9a8a6a" text-transform="uppercase" padding="0 0 6px">
+          The Daily Brief &middot; Vol. {{volume}}
         </mj-text>
-        <mj-text font-size="10px" align="center" padding="0" color="#999" text-transform="uppercase">
-          Weather
+        <mj-text align="center" font-family="Fraunces, Georgia, serif" font-size="48px" font-weight="800" color="#1a1a1a" line-height="1.05" padding="0">
+          Brief Me Up
+        </mj-text>
+        <mj-text align="center" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="14px" color="#7a6a4a" padding="6px 0 0">
+          {{date}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding="14px 24px 22px">
+      <mj-column>
+        <mj-divider border-width="2px" border-color="#1a1a1a" padding="0"></mj-divider>
+        <mj-text align="center" font-size="11px" letter-spacing="2px" color="#7a6a4a" text-transform="uppercase" padding="10px 0 0">
+          <a href="#headlines" style="color:#7a6a4a; border:none;">Headlines</a>
+          &nbsp;&middot;&nbsp;
+          <a href="#workout" style="color:#7a6a4a; border:none;">Workout</a>
+          &nbsp;&middot;&nbsp;
+          <a href="#word" style="color:#7a6a4a; border:none;">Word</a>
+          &nbsp;&middot;&nbsp;
+          <a href="#fact" style="color:#7a6a4a; border:none;">Fact</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Weather -->
+    <mj-section background-color="#ffffff" border-radius="6px" padding="22px 28px" css-class="card">
+      <mj-column>
+        <mj-text padding="0 0 10px">
+          <span style="display:inline-block; background:#0369a1; color:#fff; font-size:10px; font-weight:600; letter-spacing:2px; padding:4px 10px; border-radius:99px; text-transform:uppercase;">Weather</span>
         </mj-text>
         <mj-text>
           {{md data.weather.body}}
         </mj-text>
-        <mj-divider></mj-divider>
-        <mj-text font-size="10px" align="center" padding="0" color="#999" text-transform="uppercase">
-          <a name="headlines">Headlines</a>
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding="0"><mj-column><mj-spacer height="14px"></mj-spacer></mj-column></mj-section>
+
+    <!--Headlines -->
+    <mj-section background-color="#ffffff" border-radius="6px" padding="22px 28px">
+      <mj-column>
+        <mj-text padding="0 0 10px">
+          <a name="headlines"></a>
+          <span style="display:inline-block; background:#b91c1c; color:#fff; font-size:10px; font-weight:600; letter-spacing:2px; padding:4px 10px; border-radius:99px; text-transform:uppercase;">Headlines</span>
         </mj-text>
         <mj-text>
           {{md data.news.body}}
         </mj-text>
-        <mj-divider></mj-divider>
-        <mj-text font-size="10px" align="center" padding="0" color="#999" text-transform="uppercase">
-          <a name="workout">Workout</a> Of The Day &mdash; <a href="{{data.workout.url}}">View online</a>
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding="0"><mj-column><mj-spacer height="14px"></mj-spacer></mj-column></mj-section>
+
+    <!--Workout -->
+    <mj-section background-color="#ffffff" border-radius="6px" padding="22px 28px">
+      <mj-column>
+        <mj-text padding="0 0 10px">
+          <a name="workout"></a>
+          <span style="display:inline-block; background:#c2410c; color:#fff; font-size:10px; font-weight:600; letter-spacing:2px; padding:4px 10px; border-radius:99px; text-transform:uppercase;">Workout of the day</span>
+          &nbsp;<a href="{{data.workout.url}}" style="font-size:11px; color:#7a6a4a; border:none; text-transform:uppercase; letter-spacing:1px;">view online &rarr;</a>
         </mj-text>
         <mj-text>
           {{md data.workout.body}}
         </mj-text>
-        <mj-divider></mj-divider>
-        <mj-text font-size="10px" align="center" padding="0" color="#999" text-transform="uppercase">
-          Today&apos;s <a name="word">Word</a>
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding="0"><mj-column><mj-spacer height="14px"></mj-spacer></mj-column></mj-section>
+
+    <!--Word -->
+    <mj-section background-color="#ffffff" border-radius="6px" padding="22px 28px">
+      <mj-column>
+        <mj-text padding="0 0 10px">
+          <a name="word"></a>
+          <span style="display:inline-block; background:#6d28d9; color:#fff; font-size:10px; font-weight:600; letter-spacing:2px; padding:4px 10px; border-radius:99px; text-transform:uppercase;">Word of the day</span>
         </mj-text>
         <mj-text>
           {{md data.word.body}}
         </mj-text>
-        <mj-divider></mj-divider>
-        <mj-text font-size="10px" align="center" padding="0" color="#999" text-transform="uppercase">
-          Fun <a name="fact">Fact</a>
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding="0"><mj-column><mj-spacer height="14px"></mj-spacer></mj-column></mj-section>
+
+    <!--Fact -->
+    <mj-section background-color="#ffffff" border-radius="6px" padding="22px 28px">
+      <mj-column>
+        <mj-text padding="0 0 10px">
+          <a name="fact"></a>
+          <span style="display:inline-block; background:#0f766e; color:#fff; font-size:10px; font-weight:600; letter-spacing:2px; padding:4px 10px; border-radius:99px; text-transform:uppercase;">On this day</span>
         </mj-text>
         <mj-text>
           {{md data.fact.body}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="28px 24px 36px">
+      <mj-column>
+        <mj-divider border-width="1px" border-color="#d9cfb8" padding="0 0 16px"></mj-divider>
+        <mj-text align="center" font-size="11px" color="#9a8a6a" letter-spacing="1px" text-transform="uppercase">
+          Compiled with care &middot; Brief Me Up
+        </mj-text>
+        <mj-text align="center" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="13px" color="#7a6a4a" padding="6px 0 0">
+          &mdash; fin &mdash;
         </mj-text>
       </mj-column>
     </mj-section>

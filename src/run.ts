@@ -29,10 +29,26 @@ export const main = async () => {
     fs.readFileSync("./res/container.hbs.mjml").toString("utf8")
   );
   console.log("processing template...");
-  const mjml = template({ data: responses });
+  const now = new Date();
+  const epoch = new Date("2024-01-01T00:00:00Z").getTime();
+  const volume = Math.max(
+    1,
+    Math.floor((now.getTime() - epoch) / (1000 * 60 * 60 * 24))
+  );
+  const formattedDate = now.toLocaleDateString("en-AU", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+  const mjml = template({
+    data: responses,
+    date: formattedDate,
+    volume,
+  });
 
   console.log("converting mjml...");
-  const { html } = mjml2html(mjml);
+  const { html } = await mjml2html(mjml);
 
   const subject = `Daily briefing - ${new Date().toLocaleDateString("en-AU", {
     weekday: "long",
