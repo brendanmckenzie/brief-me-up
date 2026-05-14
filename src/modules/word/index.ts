@@ -20,19 +20,42 @@ export const handler: ModuleHandler = async (config: Config) => {
     year: "numeric",
   });
 
+  const letters = "abcdefghijklmnoprstuvw";
+  const letter = letters[Math.floor(Math.random() * letters.length)];
+  const themes = [
+    "science",
+    "nature",
+    "emotion",
+    "philosophy",
+    "craft",
+    "food",
+    "weather",
+    "music",
+    "architecture",
+    "language",
+    "movement",
+    "light",
+    "memory",
+    "social life",
+    "the body",
+    "time",
+  ];
+  const theme = themes[Math.floor(Math.random() * themes.length)];
+
   const response = await client.beta.messages.parse({
     model: "claude-opus-4-7",
     max_tokens: 1024,
+    temperature: 1,
     system: [
       "You provide an interesting, uncommon English word each day, without any preamble.",
       "Write in Australian English spelling, but pick words from standard English vocabulary — avoid slang, expletives, slurs, regional epithets, and anything offensive, vulgar, sexual, violent, or politically charged.",
-      "Favour evocative, useful words across science, nature, emotion, philosophy, craft, food, weather, and everyday life — words a curious adult would enjoy adding to their vocabulary.",
+      "Favour evocative, useful words a curious adult would enjoy adding to their vocabulary.",
       "Definitions should be clear and concise; etymology should be factual and brief.",
     ].join(" "),
     messages: [
       {
         role: "user",
-        content: `Today is ${today}. Generate a word of the day with a definition and a brief etymology.`,
+        content: `Today is ${today}. Generate a word of the day with a definition and a brief etymology. Pick a word starting with the letter "${letter}" and loosely related to the theme of ${theme}. Do not mention the letter or theme in your output.`,
       },
     ],
     output_format: betaZodOutputFormat(WordSchema),
